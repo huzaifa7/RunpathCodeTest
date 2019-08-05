@@ -10,13 +10,18 @@ namespace PhotoAlbumApi.UnitTests.Service
 {
     public class PhotoAlbumServiceShould
     {
-        [Fact]
-        public async Task Call_JsonPlaceHolderApiClient_To_Get_Albums_When_Getting_Details()
-        {
-            // Arrange
-            var apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
-            var photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
+        private Mock<IJsonPlaceHolderApiClient> apiClientMock;
+        private PhotoAlbumService photoAlbumService;
 
+        public PhotoAlbumServiceShould()
+        {
+            apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
+            photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
+        }
+
+        [Fact]
+        public async Task Call_JsonPlaceHolderApiClient_To_Get_All_Albums_Details()
+        {
             // Act
             await photoAlbumService.GetDetails();
 
@@ -25,12 +30,8 @@ namespace PhotoAlbumApi.UnitTests.Service
         }
 
         [Fact]
-        public async Task Call_JsonPlaceHolderApiClient_To_Get_Photos_When_Getting_Details()
+        public async Task Call_JsonPlaceHolderApiClient_To_Get_All_Photo_Details()
         {
-            // Arrange
-            var apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
-            var photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
-
             // Act
             await photoAlbumService.GetDetails();
 
@@ -39,11 +40,9 @@ namespace PhotoAlbumApi.UnitTests.Service
         }
 
         [Fact]
-        public async Task Call_JsonPlaceHolderApiClient_To_Get_Albums_When_Getting_Details_For_A_User()
+        public async Task Call_JsonPlaceHolderApiClient_To_Get_Albums_For_A_Specific_User()
         {
             // Arrange
-            var apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
-            var photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
             int userId = 1;
 
             // Act
@@ -54,11 +53,9 @@ namespace PhotoAlbumApi.UnitTests.Service
         }
 
         [Fact]
-        public async Task Call_JsonPlaceHolderApiClient_To_Get_Photos_When_Getting_Details_For_A_User()
+        public async Task Call_JsonPlaceHolderApiClient_To_Get_Photos_For_A_Specific_User()
         {
             // Arrange
-            var apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
-            var photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
             int userId = 1;
 
             // Act
@@ -72,25 +69,24 @@ namespace PhotoAlbumApi.UnitTests.Service
         public async Task Return_Album_Collection_When_Getting_Details()
         {
             // Arrange
-            var album = new Http.Dto.Album(1,1,"quidem molestiae enim");
-            var photo = new Photo(1,1,"accusamus beatae ad facilis cum similique qui sunt", "https://via.placeholder.com/600/92c952", "https://via.placeholder.com/150/92c952");
-            var apiClientMock = new Mock<IJsonPlaceHolderApiClient>();
-            apiClientMock.Setup(client => client.GetAlbums()).ReturnsAsync(new[]{album});
-            apiClientMock.Setup(client => client.GetPhotos()).ReturnsAsync(new[]{photo});
-
-            var photoAlbumService = new PhotoAlbumService(apiClientMock.Object);
+            var expectedAlbum = new Http.Dto.Album(1,1,"quidem molestiae enim");
+            var expectedPhoto = new Photo(1,1,"accusamus beatae ad facilis cum similique qui sunt", "https://via.placeholder.com/600/92c952", "https://via.placeholder.com/150/92c952");
+            apiClientMock.Setup(client => client.GetAlbums()).ReturnsAsync(new[]{expectedAlbum});
+            apiClientMock.Setup(client => client.GetPhotos()).ReturnsAsync(new[]{expectedPhoto});
 
             // Act
             var albums = await photoAlbumService.GetDetails();
 
             // Assert
-            Assert.Equal(album.Id, albums.First().Id);
-            Assert.Equal(album.UserId, albums.First().UserId);
-            Assert.Equal(album.Title, albums.First().Title);
-            Assert.Equal(photo.Id, albums.First().Photos.First().Id);
-            Assert.Equal(photo.Title, albums.First().Photos.First().Title);
-            Assert.Equal(photo.Url, albums.First().Photos.First().Url);
-            Assert.Equal(photo.ThumbnailUrl, albums.First().Photos.First().ThumbnailUrl);
+            var albumFound = albums.First();
+            var photoFound = albumFound.Photos.First();
+            Assert.Equal(expectedAlbum.Id, albumFound.Id);
+            Assert.Equal(expectedAlbum.UserId, albumFound.UserId);
+            Assert.Equal(expectedAlbum.Title, albumFound.Title);
+            Assert.Equal(expectedPhoto.Id, photoFound.Id);
+            Assert.Equal(expectedPhoto.Title, photoFound.Title);
+            Assert.Equal(expectedPhoto.Url, photoFound.Url);
+            Assert.Equal(expectedPhoto.ThumbnailUrl, photoFound.ThumbnailUrl);
         }
     }
 }

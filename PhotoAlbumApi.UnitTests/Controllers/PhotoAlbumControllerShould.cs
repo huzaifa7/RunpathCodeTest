@@ -11,13 +11,18 @@ namespace PhotoAlbumApi.UnitTests.Controllers
 {
     public class PhotoAlbumControllerShould
     {
+        private Mock<IPhotoAlbumService> photoAlbumServiceMock;
+        private PhotoAlbumController photoAlbumController;
+
+        public PhotoAlbumControllerShould()
+        {
+            photoAlbumServiceMock = new Mock<IPhotoAlbumService>();
+            photoAlbumController = new PhotoAlbumController(photoAlbumServiceMock.Object);
+        }
+
         [Fact]
         public async Task Call_PhotoAlbumService_To_Get_Album_Details_When_Get_Operation_Is_Invoked()
         {
-            // Arrange
-            var photoAlbumServiceMock = new Mock<IPhotoAlbumService>();
-            var photoAlbumController = new PhotoAlbumController(photoAlbumServiceMock.Object);
-
             // Act
             await photoAlbumController.Get();
 
@@ -28,10 +33,6 @@ namespace PhotoAlbumApi.UnitTests.Controllers
         [Fact]
         public async Task Return_Album_Collection_When_Get_Operration_Is_Invoked()
         {
-            // Arrange
-            var photoAlbumServiceMock = new Mock<IPhotoAlbumService>();
-            var photoAlbumController = new PhotoAlbumController(photoAlbumServiceMock.Object);
-
             // Act
             var response = await photoAlbumController.Get();
 
@@ -44,8 +45,6 @@ namespace PhotoAlbumApi.UnitTests.Controllers
         {
             // Arrange
             int userId = 1;
-            var photoAlbumServiceMock = new Mock<IPhotoAlbumService>();
-            var photoAlbumController = new PhotoAlbumController(photoAlbumServiceMock.Object);
 
             // Act
             await photoAlbumController.Get(userId);
@@ -59,8 +58,6 @@ namespace PhotoAlbumApi.UnitTests.Controllers
         {
             // Arrange
             int userId = 1;
-            var photoAlbumServiceMock = new Mock<IPhotoAlbumService>();
-            var photoAlbumController = new PhotoAlbumController(photoAlbumServiceMock.Object);
 
             // Act
             var response = await photoAlbumController.Get(userId);
